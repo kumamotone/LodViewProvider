@@ -33,8 +33,8 @@ namespace LodViewProvider {
 		}
 
 		public TResult Execute<TResult>( Expression expression ) {
-			// ( ( Expression ) expression ).Show();
-
+			// (( Expression ) expression ).Show();
+            
 			// var timer = new System.Diagnostics.Stopwatch();
 			// timer.Start();
 

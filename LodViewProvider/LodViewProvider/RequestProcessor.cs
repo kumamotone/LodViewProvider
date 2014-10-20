@@ -12,54 +12,93 @@ namespace LodViewProvider {
 	public enum TargetMethodType {
 		Selection,
 		Projection,
-		Aggregation
+		Aggregation,
+        Join
 	}
+
+    internal enum JoinType
+    {
+        CrossJoin,
+        InnerJoin,
+        CrossApply,
+    }
 
 	public class RequestProcessor {
 
 		public RequestProcessor() {
 		}
-		
-		public IRequestable GetParameters( LambdaExpression lambdaExpression, TargetMethodType methodType, AggregationType aggType = AggregationType.Min ) {
-			IRequestable condition = null;
 
-			switch ( methodType ) {
-				case TargetMethodType.Projection: {
-					switch ( lambdaExpression.Body.NodeType ) {
-						case ExpressionType.Equal: {
-							condition = createSingleSelectionFunctionFromBinaryExpression( lambdaExpression ); // Select a variable with condition
-						} break;
-						case ExpressionType.New: { 
-							condition = createMultipleSelectionFunction( lambdaExpression ); // Select many variables
-						} break;
-						case ExpressionType.Call: {
-							condition = createSingleSelectionFunction( lambdaExpression ); // Select a variable
-						}break;
-						case ExpressionType.Parameter: {
-							condition = new All(); // Select all with no condition
-						}break;
-						default: {
-							condition = createSingleSelectionFunctionFromBinaryExpression( lambdaExpression ); // Select a variable with condition
-						} break;
-					}
-				}break;
-				case TargetMethodType.Selection: {
-					condition = createFilterForSelection( lambdaExpression );
-				} break;
-				case TargetMethodType.Aggregation: {
-					switch ( aggType ) {
-						case AggregationType.Count: {
-							condition = createCountFunction( lambdaExpression );
-						} break;
-						default: {
-							condition = createAggregationForAggregationFunction( lambdaExpression, aggType );
-						} break;
-					}
-				} break;
-			}
+        public IRequestable GetParameters(LambdaExpression lambdaExpression, TargetMethodType methodType, AggregationType aggType = AggregationType.Min)
+        {
+            IRequestable condition = null;
 
-			return condition;
-		}
+            switch (methodType)
+            {
+                case TargetMethodType.Projection:
+                    {
+                        switch (lambdaExpression.Body.NodeType)
+                        {
+                            case ExpressionType.Equal:
+                                {
+                                    condition = createSingleSelectionFunctionFromBinaryExpression(lambdaExpression); // Select a variable with condition
+                                }
+                                break;
+                            case ExpressionType.New:
+                                {
+                                    condition = createMultipleSelectionFunction(lambdaExpression); // Select many variables
+                                }
+                                break;
+                            case ExpressionType.Call:
+                                {
+                                    condition = createSingleSelectionFunction(lambdaExpression); // Select a variable
+                                }
+                                break;
+                            case ExpressionType.Parameter:
+                                {
+                                    condition = new All(); // Select all with no condition
+                                }
+                                break;
+                            default:
+                                {
+                                    condition = createSingleSelectionFunctionFromBinaryExpression(lambdaExpression); // Select a variable with condition
+                                }
+                                break;
+                        }
+                    }
+                    break;
+                case TargetMethodType.Selection:
+                    {
+                        condition = createFilterForSelection(lambdaExpression);
+                    }
+                    break;
+                case TargetMethodType.Aggregation:
+                    {
+                        switch (aggType)
+                        {
+                            case AggregationType.Count:
+                                {
+                                    condition = createCountFunction(lambdaExpression);
+                                }
+                                break;
+                            default:
+                                {
+                                    condition = createAggregationForAggregationFunction(lambdaExpression, aggType);
+                                }
+                                break;
+                        }
+                    }break;
+                case TargetMethodType.Join:
+                    {
+                        condition = createAggregationForAggregationFunction(lambdaExpression, aggType);
+//                     return this.VisitJoin((JoinExpression)exp));
+                
+                    }
+                break;
+            }
+
+            return condition;
+        }
+
 
 		private MultipleSelection createMultipleSelectionFunction( LambdaExpression lambdaExpression ) {
 			NewExpression newExp = null;

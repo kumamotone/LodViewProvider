@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using ExpressionViewer;
 
 namespace LodViewProvider {
 
@@ -77,6 +78,20 @@ namespace LodViewProvider {
 				throw new Exception( string.Format( "Unhandled expression type: '{0}'", exp.NodeType ) );
 			}
 		}
+
+        /*
+        protected virtual Expression VisitJoin(JoinExpression join)
+        {
+            Expression left = this.Visit(join.Left);
+            Expression right = this.Visit(join.Right);
+            Expression condition = this.Visit(join.Condition);
+            if (left != join.Left || right != join.Right || condition != join.Condition)
+            {
+                return new JoinExpression(join.Type, join.Join, left, right, condition);
+            }
+            return join;
+        }*/
+
 
 		protected virtual MemberBinding VisitBinding( MemberBinding binding ) {
 			switch ( binding.BindingType ) {
@@ -191,6 +206,7 @@ namespace LodViewProvider {
 
 		protected virtual Expression VisitMethodCall( MethodCallExpression m ) {
 			Expression obj = this.Visit( m.Object );
+            obj.Show();
 			IEnumerable<Expression> args = this.VisitExpressionList( m.Arguments );
 			if ( obj != m.Object || args != m.Arguments ) {
 				try {

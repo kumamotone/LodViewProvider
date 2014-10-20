@@ -18,7 +18,6 @@ namespace LodViewProvider {
 	/// Context for using LINQ
 	/// </summary>
 	public class LodViewContext {
-
 		public string RawResult { get; private set; }
 		public string ViewURI { get; private set; }
 
@@ -160,6 +159,16 @@ namespace LodViewProvider {
 				var aggregation = requestProcessor.GetParameters( lambdaExpression, TargetMethodType.Aggregation, aggFunction.Item2 );
 				conditions.Add( aggregation );
 			}
+
+            var joinExpressions = new JoinClauseFinder().GetAllJoins(expression);
+            foreach (var joinExpression in joinExpressions)
+            {
+                var lambdaExpression = (LambdaExpression)((UnaryExpression)(joinExpression.Arguments[1])).Operand;
+                lambdaExpression = (LambdaExpression)Evaluator.PartialEval(lambdaExpression);
+
+                var joins = requestProcessor.GetParameters(lambdaExpression, TargetMethodType.Join);
+                conditions.Add(joins);
+            }
 
 			return conditions;
 		}

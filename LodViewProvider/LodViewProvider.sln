@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LodViewProvider", "LodViewProvider\LodViewProvider.csproj", "{5561FA57-56FE-4351-8307-EDA9F1E4C185}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProviderApp", "ProviderApp\ProviderApp.csproj", "{6FC97648-F28D-4429-9597-6597FCC085CD}"
@@ -21,12 +23,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D621EE
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionViewer", "..\..\..\Visual Studio 2010\Projects\ExpressionViewer\ExpressionViewer\ExpressionViewer.csproj", "{6D709594-6F79-44D0-90EF-242955D4258F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionViewer", "ExpressionViewer\ExpressionViewer.csproj", "{1B457851-3497-4F4B-AB39-4BE0B05CEAD3}"
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = LodViewProvider.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -66,18 +65,21 @@ Global
 		{AE39B55A-AEDA-4A26-B962-DD5A10E9FF1B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{AE39B55A-AEDA-4A26-B962-DD5A10E9FF1B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{AE39B55A-AEDA-4A26-B962-DD5A10E9FF1B}.Release|x86.ActiveCfg = Release|Any CPU
-		{6D709594-6F79-44D0-90EF-242955D4258F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6D709594-6F79-44D0-90EF-242955D4258F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6D709594-6F79-44D0-90EF-242955D4258F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{6D709594-6F79-44D0-90EF-242955D4258F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{6D709594-6F79-44D0-90EF-242955D4258F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{6D709594-6F79-44D0-90EF-242955D4258F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6D709594-6F79-44D0-90EF-242955D4258F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6D709594-6F79-44D0-90EF-242955D4258F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{6D709594-6F79-44D0-90EF-242955D4258F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{6D709594-6F79-44D0-90EF-242955D4258F}.Release|x86.ActiveCfg = Release|Any CPU
+		{1B457851-3497-4F4B-AB39-4BE0B05CEAD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B457851-3497-4F4B-AB39-4BE0B05CEAD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B457851-3497-4F4B-AB39-4BE0B05CEAD3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{1B457851-3497-4F4B-AB39-4BE0B05CEAD3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{1B457851-3497-4F4B-AB39-4BE0B05CEAD3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1B457851-3497-4F4B-AB39-4BE0B05CEAD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B457851-3497-4F4B-AB39-4BE0B05CEAD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B457851-3497-4F4B-AB39-4BE0B05CEAD3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{1B457851-3497-4F4B-AB39-4BE0B05CEAD3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{1B457851-3497-4F4B-AB39-4BE0B05CEAD3}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = LodViewProvider.vsmdi
 	EndGlobalSection
 EndGlobal
