@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="AggregateFunctionFinder.cs" />
     <Compile Include="JoinClauseFinder.cs" />
+    <Compile Include="JoinCondition.cs" />
     <Compile Include="JoinExpression.cs" />
     <Compile Include="Selection.cs" />
     <Compile Include="IRequestable.cs" />
@@ -61,7 +62,7 @@
     <Compile Include="InnermostWhereFinder.cs" />
     <Compile Include="InvalidQueryException.cs" />
     <Compile Include="LinqToTwitter\Evaluator.cs" />
-    <Compile Include="LodViewProvider.cs" />
+    <Compile Include="LodViewContext.cs" />
     <Compile Include="MethodCallExpressionTypeFinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryParameter.cs" />

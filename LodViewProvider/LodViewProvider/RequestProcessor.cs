@@ -24,6 +24,7 @@ namespace LodViewProvider {
     }
 
 	public class RequestProcessor {
+        public Dictionary<string, List<IRequestable>> views; 
 
 		public RequestProcessor() {
 		}
@@ -114,7 +115,11 @@ namespace LodViewProvider {
 			foreach ( var arg in newExp.Arguments ) {
 				if ( arg.NodeType == ExpressionType.Call ) {
 					var mcall = arg as MethodCallExpression;
-					singleSelections.Add( new SingleSelection( mcall.Arguments[0].ToString() ) );
+                    var viewname = ((MemberExpression)(mcall.Object)).Member.Name;
+                    // List<IRequestable> value;
+                    // views.TryGetValue(viewname, out value);
+                    
+                    singleSelections.Add(new SingleSelection(mcall.Arguments[0].ToString(),"","","System.String" ,viewname));
 				}
 				else if ( arg.NodeType == ExpressionType.MemberAccess ){ // parameter name of "GROUP BY INTO ~~"
 					var maccess = arg as MemberExpression;
@@ -154,7 +159,7 @@ namespace LodViewProvider {
 			return new SingleSelection( tuple.Item1, tuple.Item2, tuple.Item4, tuple.Item3 );
 		}
 
-		private Tuple<string, string, string, string> castBinaryExpression( LambdaExpression lambdaExpression ) {
+		private Tuple<string, string, string, string, string> castBinaryExpression( LambdaExpression lambdaExpression ) {
 			BinaryExpression binExp = null;
 			MethodCallExpression mCallExp = null;
 			string variable = null;
@@ -175,11 +180,13 @@ namespace LodViewProvider {
 			}
 
 			var left = binExp.Left as MethodCallExpression;
-			Tuple<string, string, string, string> conditionTuple = new Tuple<string, string, string, string>(
+         
+			Tuple<string, string, string, string, string> conditionTuple = new Tuple<string, string, string, string, string>(
 				variable,
 				binExp.Right.ToString(),
 				binExp.Right.Type.ToString(),
-				detectOperator( binExp.NodeType ) );
+				detectOperator( binExp.NodeType ),
+                ((MemberExpression)left.Object).Member.Name);
 
 			return conditionTuple;
 		}
@@ -191,7 +198,7 @@ namespace LodViewProvider {
 
 		private Filter createFilterForSelection( LambdaExpression lambdaExpression ) {
 			var tuple = castBinaryExpression( lambdaExpression );
-			return new Filter( tuple.Item1, tuple.Item2, tuple.Item4, FilterType.Normal, tuple.Item3 );
+			return new Filter( tuple.Item1, tuple.Item2, tuple.Item4, FilterType.Normal, tuple.Item3, tuple.Item5 );
 		}
 
 		private Aggregation createAggregationForAggregationFunction( LambdaExpression lambdaExpression, AggregationType aggType ) {
@@ -331,5 +338,5 @@ namespace LodViewProvider {
 
 			return entries;
 		}
-	}
+    }
 }

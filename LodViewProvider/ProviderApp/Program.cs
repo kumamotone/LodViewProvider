@@ -17,7 +17,7 @@ namespace ProviderApp {
 			const int viewBaseUrlPort = 4567;
 			const string viewBaseHost = "localhost";
 			string viewBaseUrl = String.Format( "http://{0}:{1}/", viewBaseHost, viewBaseUrlPort.ToString() );
-			string viewUrlProf = viewBaseUrl + "exp/join/prof/";
+			    string viewUrlProf = viewBaseUrl + "exp/join/prof/";
             string viewUrlLab = viewBaseUrl + "exp/join/lab/";
 
 			Console.WriteLine( viewUrlProf );

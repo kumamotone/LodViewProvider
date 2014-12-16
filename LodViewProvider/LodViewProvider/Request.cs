@@ -10,6 +10,7 @@ namespace LodViewProvider {
 
 	public class Request {
 
+        public bool JoinEnabled { get; set; }
 		public string ViewURL { get; private set; }
 		public QueryParameter Parameter { get; private set; }
 

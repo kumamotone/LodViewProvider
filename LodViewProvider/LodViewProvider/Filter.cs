@@ -20,16 +20,18 @@ namespace LodViewProvider {
 		public string Operator { get; private set; }
 		public FilterType FilterType { get; private set; }
 		public string ConditionType { get; private set; }
+        public string ViewName { get; private set; }
 
 		public Filter( string left, string right, string oper)
 			: this( left, right, oper, FilterType.Normal, "System.String" ) {}
 
-		public Filter( string left, string right, string oper, FilterType filterType, string conditionType ) {
+		public Filter( string left, string right, string oper, FilterType filterType, string conditionType, string viewName = "" ) {
 			Variable = left.Trim( '\"' );
 			Condition = right.Trim( '\"' );
 			Operator = oper;
 			FilterType = filterType;
 			ConditionType = conditionType;
+            ViewName = viewName;
 		}
 
 		public override string ToString() {

@@ -18,13 +18,16 @@ namespace LodViewProvider {
 		public string Operator { get; private set; }
 		public SelectionType SelectionType { get; private set; }
 		public string ConditionType { get; private set; }
+        public Object obj { get; private set; }
+        public string ViewName { get; private set; }
 
-		public SingleSelection( string variable, string condition = "", string oper = "", string conditionType = "System.String" ) {
+		public SingleSelection( string variable, string condition = "", string oper = "", string conditionType = "System.String", string viewName = "" ) {
 			Variable = variable.Trim( '\"' );
 			Condition = condition.Trim( '\"' );
 			Operator = oper;
 			SelectionType = LodViewProvider.SelectionType.Single;
 			ConditionType = conditionType;
+            ViewName = viewName;
 		}
 
 		public override string ToString() {
