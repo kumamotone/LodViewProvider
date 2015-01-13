@@ -45,15 +45,19 @@ namespace ProviderApp {
             var join = from prof in profs
                        join lab in labs
                        on prof["labID"] equals lab["ID"]
-                        where prof["Name"] == "Kitagawa"
+                       where prof["Name"] == "Kitagawa"
                        select new
                        {
                            ProfID = prof["ID"],
-                           ProfName = prof["Name"],
                            LabName = lab["Name"]
                        };
 
-            var res = join.ToList();
+            
+            foreach(var j in join)
+            {
+                Console.WriteLine("ProfID:{0} ProfName:{1} LabName:{2}", j.ProfID, j.LabName);
+            }
+            //var res = join.ToList();
             
             // var res = result.ToList();
 			Console.ReadKey();

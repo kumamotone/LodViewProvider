@@ -69,23 +69,47 @@ namespace LodViewProvider {
 
             var conditions = getRequestParameters( expression, requestProcessor );
 
-            // condition仕分け！！
+            // View ごとに condition を views に振り分ける
+
             
-            foreach(var condition in conditions)
+
+
+            List<IRequestable> values = new List<IRequestable>();
+            
+            // conditions に入ったIRequestable を views に分配する
+            foreach (var view in views)
             {
-                // selection
-                
-                if(condition as MultipleSelection == null)
+                foreach (var condition  in conditions)
                 {
-                    var a = condition as MultipleSelection;
-
-                    foreach (SingleSelection b in a.Variables)
+                    // ここから Selection
+                    if (condition as MultipleSelection != null)
                     {
-                        List<IRequestable> value;
-                        views.TryGetValue(b.ViewName, out value);
-                        value.Add(new MultipleSelection());
-
+                        var item = condition as MultipleSelection;
+                        foreach (SingleSelection item2 in item.Variables)
+                        {
+                            if(item2.ViewName == view.Key)
+                            {
+                                foreach (var v in views)
+                                {
+                                    foreach (var c in v.Value)
+                                    {
+                                        if (c as SingleSelection != null)
+                                        {
+                                            var c2 = c as SingleSelection;
+                                            // もし 追加しようとしているitemのViewNameが viewのKey と一致していて
+                                            // すでに追加されていないものならAddする
+                                            if (c2.Variable != item2.Variable && c2.Variable != item2.ViewName)
+                                            {
+                                                views[view.Key].Add(item2);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
+                    // ここから Projection
+                    // ...
                 }
             }
             
@@ -162,6 +186,7 @@ namespace LodViewProvider {
 			return queryableResources.Provider.Execute( newExpressionTree );
 		}
 
+
 		private List<IRequestable> getRequestParameters( Expression expression, RequestProcessor requestProcessor ) {
 			var conditions = new List<IRequestable>();
 
@@ -235,8 +260,13 @@ namespace LodViewProvider {
                 var innerViewUrl = ((LodViewQueryable<System.Collections.Generic.Dictionary<string, string>>)innerSource.Value).ViewUrl;
 
                 joincondition = new JoinCondition(outerKeyStr2, innerKeyStr2, outerViewUrl, innerViewUrl);
-                views.Add((((LambdaExpression)StripQuotes(m.Arguments[4])).Parameters[0].Name), new List<IRequestable>());
-                views.Add((((LambdaExpression)StripQuotes(m.Arguments[4])).Parameters[1].Name), new List<IRequestable>());
+                var outerviewname = (((LambdaExpression)StripQuotes(m.Arguments[4])).Parameters[0].Name);
+                var innerviewname = (((LambdaExpression)StripQuotes(m.Arguments[4])).Parameters[1].Name);
+                views.Add(innerviewname, new List<IRequestable>());
+                views[innerviewname].Add((new SingleSelection(innerKeyStr2, "", "", "System.String", innerviewname)));
+
+                views.Add(outerviewname, new List<IRequestable>());
+                views[outerviewname].Add((new SingleSelection(outerKeyStr2, "", "", "System.String", outerviewname)));
 
                 // var a = (MethodCallExpression)(op).Body;
                 // var b = a.Arguments[0].ToString();
