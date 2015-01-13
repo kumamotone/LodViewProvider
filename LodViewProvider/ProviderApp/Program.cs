@@ -45,7 +45,6 @@ namespace ProviderApp {
             var join = from prof in profs
                        join lab in labs
                        on prof["labID"] equals lab["ID"]
-                       where prof["Name"] == "Kitagawa"
                        select new
                        {
                            ProfID = prof["ID"],

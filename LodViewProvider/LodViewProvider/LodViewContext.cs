@@ -69,39 +69,38 @@ namespace LodViewProvider {
 
             var conditions = getRequestParameters( expression, requestProcessor );
 
-
             // conditions に入ったIRequestable. を views に分配する
-            Dictionary<string, List<IRequestable>> newview = new Dictionary<string,List<IRequestable>>();
-            
+            Dictionary<string, List<IRequestable>> newviews = new Dictionary<string,List<IRequestable>>();
+
             foreach (var view in views)
             {
-                // newview[view.Key].Add(item2) でエラーが出るのを回避したかっただけ
-                newview.Add(view.Key, new List<IRequestable>());
+                // 初期化 newview[view.Key].Add(single) でエラーが出るため
+                newviews.Add(view.Key, new List<IRequestable>());
             }
-            foreach (var view in views)
+            foreach (var view in views.ToList())
             {
                 foreach (var condition in conditions)
                 {
                     // ここから Selection
                     if (condition as MultipleSelection != null)
                     {
-                        var item = condition as MultipleSelection;
-                        foreach (SingleSelection item2 in item.Variables)
+                        var multi = condition as MultipleSelection;
+                        foreach (SingleSelection single in multi.Variables)
                         {
-                            if (item2.ViewName == view.Key)
+                            if (single.ViewName == view.Key)
                             {
-                                newview[view.Key].Add(item2);
+                                newviews[view.Key].Add(single);
                             }
                         }
                     }
-                    // ここから Projection
+                    // ここから Filter
                     // ...
                 }
-            }
 
-            // ここで viewと newview をマージしたい（なぜか重複キーがあるとか言われてマージできない）
-
-  
+                // viewsにマージ
+                views[view.Key] = views[view.Key].Union(newviews[view.Key]).ToList();
+            }            
+            
             stopwatch.Stop();
 
 			Console.WriteLine( "ANALYZE: \t{0}", stopwatch.ElapsedMilliseconds.ToString() );
