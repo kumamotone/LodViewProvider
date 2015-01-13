@@ -69,14 +69,13 @@ namespace LodViewProvider {
 
             var conditions = getRequestParameters( expression, requestProcessor );
 
-            // View ごとに condition を views に振り分ける
 
-            
-
-
-            List<IRequestable> values = new List<IRequestable>();
-            
-            // conditions に入ったIRequestable を views に分配する
+            // conditions に入ったIRequestable. を views に分配する
+            Dictionary<string, List<IRequestable>> views2 = new Dictionary<string,List<IRequestable>>();
+            /*foreach (var view in views)
+            {
+                views2.Add(view.Key, new List<IRequestable>());
+            }*/
             foreach (var view in views)
             {
                 foreach (var condition  in conditions)
@@ -89,18 +88,37 @@ namespace LodViewProvider {
                         {
                             if(item2.ViewName == view.Key)
                             {
-                                foreach (var v in views)
+                                if (views2.Count == 0)
                                 {
-                                    foreach (var c in v.Value)
+                                    views2.Add(view.Key, new List<IRequestable>());
+                                    views2[view.Key].Add(item2);
+                                }
+                                else
+                                {
+                                    foreach (var v in views)
                                     {
-                                        if (c as SingleSelection != null)
+                                        if (!views2.ContainsKey(view.Key))
                                         {
-                                            var c2 = c as SingleSelection;
-                                            // もし 追加しようとしているitemのViewNameが viewのKey と一致していて
-                                            // すでに追加されていないものならAddする
-                                            if (c2.Variable != item2.Variable && c2.Variable != item2.ViewName)
+                                            views2.Add(view.Key, new List<IRequestable>());
+                                            views2[view.Key].Add(item2);
+                                        }
+                                        else
+                                        {
+                                            foreach (var c in v.Value)
                                             {
-                                                views[view.Key].Add(item2);
+                                                {
+                                                    if (c as SingleSelection != null)
+                                                    {
+                                                        var c2 = c as SingleSelection;
+                                                        // もし 追加しようとしているitemのViewNameが viewのKey と一致していて
+                                                        // すでに追加されていないものならAddする
+                                                        if (c2.Variable != item2.Variable && c2.ViewName != item2.ViewName)
+                                                        {
+                                                            views2[view.Key].Add(item2);
+                                                        }
+                                                    }
+
+                                                }
                                             }
                                         }
                                     }
@@ -112,7 +130,9 @@ namespace LodViewProvider {
                     // ...
                 }
             }
-            
+            // viewとview2を連結する(できない)
+            // http://tizio1976.blogspot.jp/2014/06/c-dictionary.html
+  
             stopwatch.Stop();
 
 			Console.WriteLine( "ANALYZE: \t{0}", stopwatch.ElapsedMilliseconds.ToString() );
