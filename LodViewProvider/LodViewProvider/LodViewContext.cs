@@ -89,23 +89,65 @@ namespace LodViewProvider {
                         {
                             if (single.ViewName == view.Key)
                             {
-                                newviews[view.Key].Add(single);
+                                if (newviews[view.Key].Count == 0)
+                                {   
+                                    newviews[view.Key].Add(new MultipleSelection());
+                                }
+                                    var a = newviews[view.Key].First() as MultipleSelection;
+                                    a.Add(single);
                             }
                         }
                     }
                     // ここから Filter
-                    // ...
+                    if (condition as Filter != null)
+                    {
+                        var filt = condition as Filter;
+                        if (filt.ViewName == view.Key)
+                        {
+                            newviews[view.Key].Add(filt);
+                        }
+                    }
+
                 }
 
-                // viewsにマージ
+                // views に 無理やりマージ
                 views[view.Key] = views[view.Key].Union(newviews[view.Key]).ToList();
-            }            
+                // 無茶クソクソ無理やりダブった MultipleSelection をマージ
+                foreach(var values in views.Values)
+                {
+                    int count = 0;
+                    try
+                    {
+                        foreach (var value in values)
+                        {
+                            var a = value as MultipleSelection;
+                            if (a != null)
+                            {
+                                count = count + 1;
+                            }
+                            if (count >= 2)
+                            {
+                                var b = values.First(c => c as MultipleSelection != null) as MultipleSelection;
+                                b.Add(a);
+                                values.Remove(value);
+                            }
+                        }
+                    }
+                    catch (InvalidOperationException ioe)
+                    {
+
+                    }
+                }
+            }
             
             stopwatch.Stop();
 
 			Console.WriteLine( "ANALYZE: \t{0}", stopwatch.ElapsedMilliseconds.ToString() );
 			sum += stopwatch.ElapsedMilliseconds;
 
+            string result = null;
+            string resultOuter = null;
+            string resultInner = null;
             // JOIN 対象の複数の ViewURL を持てるようにする
             if (joincondition == null)
             {
@@ -115,26 +157,25 @@ namespace LodViewProvider {
                 // TIME: Request
                 //
                 stopwatch.Restart();
-                string r = LodViewExecute.RequestToLod(request, requestProcessor);
+                result = LodViewExecute.RequestToLod(request, requestProcessor);
                 Console.WriteLine("REQUEST: \t{0}", stopwatch.ElapsedMilliseconds.ToString());
                 sum += stopwatch.ElapsedMilliseconds;
             }
             else
             {
-                Request requestOuter = requestProcessor.CreateRequest(joincondition.outerViewUrl, conditions);
-                Request requestInnner = requestProcessor.CreateRequest(joincondition.innerViewUrl, conditions);
+                Request requestOuter = requestProcessor.CreateRequest(joincondition.OuterViewUrl, views[joincondition.OuterViewName]);
+                Request requestInnner = requestProcessor.CreateRequest(joincondition.InnerViewUrl, views[joincondition.InnerViewName]);
 
                 //
                 // TIME: Request
                 //
                 stopwatch.Restart();
-                string resultOuter = LodViewExecute.RequestToLod(requestOuter, requestProcessor);
-                string resultInner = LodViewExecute.RequestToLod(requestOuter, requestProcessor);
+                resultOuter = LodViewExecute.RequestToLod(requestOuter, requestProcessor);
+                resultInner = LodViewExecute.RequestToLod(requestInnner, requestProcessor);
                 Console.WriteLine("REQUEST: \t{0}", stopwatch.ElapsedMilliseconds.ToString());
                 sum += stopwatch.ElapsedMilliseconds;
             }
-            string result = null;
-			
+	
             // Results ジョインする
 
 			//
@@ -145,9 +186,50 @@ namespace LodViewProvider {
 			// I don't need to make Queryable resources. Because request result is already queried
 			// Currently, I don't know how to cancel remaining expression evaluation...
 
-			// var queryableResources = requestProcessor.ProcessResult( result ).AsQueryable();
-			var queryableResources = requestProcessor.ProcessResultAsDictionary( result ).AsQueryable();
-			// var queryableResources = requestProcessor.ProcessResultAsStringList( result ).AsQueryable();
+            // var queryableResources = requestProcessor.ProcessResult( result ).AsQueryable();
+            IQueryable<Dictionary<string,string>> queryableResources = null;
+            if (joincondition == null)
+            {
+                queryableResources = requestProcessor.ProcessResultAsDictionary(result).AsQueryable();
+            }
+            else
+            {
+                var queryableResourcesOuter = requestProcessor.ProcessResultAsDictionary(resultOuter);
+                var queryableResourcesInner = requestProcessor.ProcessResultAsDictionary(resultInner);
+                /*
+                foreach(var o in queryableResourcesOuter)
+                {
+                    foreach(var k in o)
+                    {
+                        var a = k.Key;
+                        if(a == joincondition.OuterKeyStr)
+                        {
+                            foreach(var i in queryableResourcesInner)
+                            {
+                                foreach(var kk in i )
+                                {
+                                    var b = kk.Key;
+                                    if (b == joincondition.InnerKeyStr)
+                                    {
+                                        
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }*/
+                 //queryableResources = queryableResourcesOuter.Union(queryableResourcesInner);
+                var qr = from qo in queryableResourcesOuter
+                         join qi in queryableResourcesInner
+                         on qo[joincondition.OuterKeyStr] equals qi[joincondition.InnerKeyStr]
+                         into ALLCOLUMNS
+                         from entry in ALLCOLUMNS
+                         select entry; 
+                var qq = qr.ToList();
+
+                queryableResources = qq.AsQueryable();
+            }
+            // var queryableResources = requestProcessor.ProcessResultAsStringList( result ).AsQueryable();
 			// var queryableResources = requestProcessor.ProcessResultAsJtokens( result ).AsQueryable();
 			// var resources = requestProcessor.ProcessResultAsJtokens( result );
 			// var queryableResources = resources.AsQueryable();
@@ -160,10 +242,8 @@ namespace LodViewProvider {
 			Console.WriteLine( "TOTAL: \t\t{0}", sum.ToString() );
 			Console.WriteLine( "RESULT SIZE: \t{0}", queryableResources.Count().ToString() );
 
-			Console.ReadKey();
 			Console.WriteLine( "\n" + result );
-			Console.ReadKey();
-
+			
 			var treeCopier = new ExpressionTreeModifier( queryableResources );
 			Expression newExpressionTree = treeCopier.CopyAndModify( expression );
 
@@ -247,14 +327,20 @@ namespace LodViewProvider {
                 var outerViewUrl = ((LodViewQueryable<System.Collections.Generic.Dictionary<string, string>>)outerSource.Value).ViewUrl;
                 var innerViewUrl = ((LodViewQueryable<System.Collections.Generic.Dictionary<string, string>>)innerSource.Value).ViewUrl;
 
-                joincondition = new JoinCondition(outerKeyStr2, innerKeyStr2, outerViewUrl, innerViewUrl);
                 var outerviewname = (((LambdaExpression)StripQuotes(m.Arguments[4])).Parameters[0].Name);
                 var innerviewname = (((LambdaExpression)StripQuotes(m.Arguments[4])).Parameters[1].Name);
+                
+                joincondition = new JoinCondition(outerKeyStr2, innerKeyStr2, outerViewUrl, innerViewUrl, outerviewname, innerviewname);
+
                 views.Add(innerviewname, new List<IRequestable>());
-                views[innerviewname].Add((new SingleSelection(innerKeyStr2, "", "", "System.String", innerviewname)));
+                views[innerviewname].Add(new MultipleSelection());
+                var a = views[innerviewname].First() as MultipleSelection;
+                a.Add((new SingleSelection(innerKeyStr2, "", "", "System.String", innerviewname)));
 
                 views.Add(outerviewname, new List<IRequestable>());
-                views[outerviewname].Add((new SingleSelection(outerKeyStr2, "", "", "System.String", outerviewname)));
+                views[outerviewname].Add(new MultipleSelection());
+                var b = views[outerviewname].First() as MultipleSelection;
+                b.Add((new SingleSelection(outerKeyStr2, "", "", "System.String", outerviewname)));
 
                 // var a = (MethodCallExpression)(op).Body;
                 // var b = a.Arguments[0].ToString();

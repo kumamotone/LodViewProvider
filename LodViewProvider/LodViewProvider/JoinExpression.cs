@@ -20,18 +20,22 @@ namespace LodViewProvider
             this.right = right;
             this.condition = condition;
         }
+
         internal JoinType Join
         {
             get { return this.joinType; }
         }
+
         internal Expression Left
         {
             get { return this.left; }
         }
+
         internal Expression Right
         {
             get { return this.right; }
         }
+
         internal new Expression Condition
         {
             get { return this.condition; }

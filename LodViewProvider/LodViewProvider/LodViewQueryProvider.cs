@@ -33,10 +33,6 @@ namespace LodViewProvider {
 		}
 
 		public TResult Execute<TResult>( Expression expression ) {
-			// (( Expression ) expression ).Show();
-            
-			// var timer = new System.Diagnostics.Stopwatch();
-			// timer.Start();
 
 			bool isEnumerable = typeof( TResult ).Name == "IEnumerable`1" || typeof( TResult ).Name == "IEnumerable";
 			Type resultType = new MethodCallExpressionTypeFinder().GetGenericType( expression );

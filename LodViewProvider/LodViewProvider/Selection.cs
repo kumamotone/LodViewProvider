@@ -59,7 +59,21 @@ namespace LodViewProvider {
 			Variables.ForEach( s => strb.Append( s.ToString() ) );
 			return strb.ToString();
 		}
-	}
+
+        public void Add( SingleSelection variable)
+        {
+            Variables.Add(variable);
+        }
+
+        public void Add(MultipleSelection variables)
+        {
+            foreach(var variable in variables.Variables)
+            { 
+                Variables.Add(variable);
+            }
+        }
+
+    }
 
 	public class All : IRequestable {
 		public SelectionType SelectionType { get; private set; }

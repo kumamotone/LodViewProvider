@@ -14,11 +14,12 @@ namespace ProviderApp {
 
 			// string viewUrl = "http://lodviewwebapp.herokuapp.com/test/1/";
 
-			const int viewBaseUrlPort = 4567;
-			const string viewBaseHost = "localhost";
-			string viewBaseUrl = String.Format( "http://{0}:{1}/", viewBaseHost, viewBaseUrlPort.ToString() );
-			    string viewUrlProf = viewBaseUrl + "exp/join/prof/";
-            string viewUrlLab = viewBaseUrl + "exp/join/lab/";
+			const int viewBaseUrlPort = 5000;
+            // const string viewBaseHost = "130.158.76.30";
+            const string viewBaseHost = "localhost";
+            string viewBaseUrl = String.Format( "http://{0}:{1}/", viewBaseHost, viewBaseUrlPort.ToString() );
+			    string viewUrlProf = viewBaseUrl + "prof/";
+            string viewUrlLab = viewBaseUrl + "lab/";
 
 			Console.WriteLine( viewUrlProf );
             Console.WriteLine( viewUrlLab );
@@ -45,18 +46,18 @@ namespace ProviderApp {
             var join = from prof in profs
                        join lab in labs
                        on prof["labID"] equals lab["ID"]
+                       where prof["Name"] == "Kitagawa"
                        select new
                        {
-                           ProfID = prof["ID"],
                            LabName = lab["Name"]
                        };
 
             
-            foreach(var j in join)
+            /*foreach(var j in join.ToList())
             {
-                Console.WriteLine("ProfID:{0} ProfName:{1} LabName:{2}", j.ProfID, j.LabName);
-            }
-            //var res = join.ToList();
+                Console.WriteLine("ProfID:{0} ProfName:{1} LabName:{2}", j.ProfID,j.ProfName, j.LabName);
+            }*/
+            var res = join.ToList();
             
             // var res = result.ToList();
 			Console.ReadKey();

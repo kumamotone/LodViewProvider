@@ -18,7 +18,7 @@ namespace LodViewProvider
             Visit(expression);
             return joinExpressions.ToArray();
         }
-
+        
         protected override Expression VisitMethodCall(MethodCallExpression m)
         {
             if (m.Method.Name == joinMethodName)

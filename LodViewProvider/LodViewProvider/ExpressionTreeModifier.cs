@@ -14,10 +14,10 @@ namespace LodViewProvider {
 		// private IQueryable<Resource> queryableResources;
 		// private IQueryable<JToken> queryableJtokens;
 
-		private IQueryable queryableResources;
+        private IQueryable<Dictionary<string, string>> queryableResources;
 
 		// internal ExpressionTreeModifier( IQueryable<Resource> resources ) {
-		internal ExpressionTreeModifier( IQueryable resources ) {
+		internal ExpressionTreeModifier( IQueryable<Dictionary<string,string>> resources ) {
 			// this.queryableResources = resources;
 			this.queryableResources = resources;
 		}
